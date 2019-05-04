@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:whispery/widgets/buttons.dart';
 
 void main() => runApp(MyApp());
 
@@ -70,6 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
+        backgroundColor: Colors.black,
       ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
@@ -98,6 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.display1,
             ),
+            Buttons().textButton(null, "sample"),
           ],
         ),
       ),
