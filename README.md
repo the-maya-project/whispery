@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/the-maya-project/whispery.svg?branch=master)](https://travis-ci.com/the-maya-project/whispery)
+
 # whispery
 
 A new Flutter project.
