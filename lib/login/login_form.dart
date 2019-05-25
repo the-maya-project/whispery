@@ -42,16 +42,17 @@ class _LoginFormState extends State<LoginForm> {
 
   UserRepository get _userRepository => widget._userRepository;
 
-  bool isEnabled(login.LoginState state) {
-    return !state.isFormValid && state.isSubmitting;
+  bool _enabled = true;
+
+  void toggle() {
+    setState(() {
+      _enabled = !_enabled;
+    });
   }
 
   void submit() {
     FormState form = _loginFormKey.currentState;
     form.save();
-    print(_email);
-    print(_password);
-    print(_validPassword);
     if (form.validate()) {
       switch (_formType) {
         case FormType.login:
@@ -69,8 +70,8 @@ class _LoginFormState extends State<LoginForm> {
   @override
   void initState() {
     super.initState();
-    // _loginBloc = BlocProvider.of<login.LoginBloc>(context);
-    // _registerBloc = BlocProvider.of<register.RegisterBloc>(context);
+    _loginBloc = BlocProvider.of<login.LoginBloc>(context);
+    _registerBloc = BlocProvider.of<register.RegisterBloc>(context);
   }
 
   @override
@@ -117,7 +118,7 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 
-  Widget buttons(login.LoginState state) {
+  Widget buttons() {
     switch (_formType) {
       case FormType.login:
         return Container(
@@ -127,13 +128,13 @@ class _LoginFormState extends State<LoginForm> {
               Container(
                 child: RaisedButton(
                   child: Text("Login"),
-                  onPressed: isEnabled(state) ? null : submit,
+                  onPressed: _enabled ? submit : null,
                 ),
               ),
               Container(
                 child: RaisedButton(
                   child: Text("Sign Up?"),
-                  onPressed: isEnabled(state) ? null : moveToRegister,
+                  onPressed: _enabled ? moveToRegister : null,
                 ),
               ),
             ],
@@ -147,13 +148,13 @@ class _LoginFormState extends State<LoginForm> {
               Container(
                 child: RaisedButton(
                   child: Text("Register"),
-                  onPressed: isEnabled(state) ? null : submit,
+                  onPressed: _enabled ? submit : null,
                 ),
               ),
               Container(
                 child: RaisedButton(
                   child: Text("Login?"),
-                  onPressed: isEnabled(state) ? null : moveToLogin,
+                  onPressed: _enabled ? moveToLogin : null,
                 ),
               ),
             ],
@@ -164,7 +165,7 @@ class _LoginFormState extends State<LoginForm> {
     }
   }
 
-  Widget fields(state) {
+  Widget fields() {
     switch (_formType) {
       case FormType.login:
         return Container(
@@ -203,6 +204,7 @@ class _LoginFormState extends State<LoginForm> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.zero,
                     ),
+                    errorMaxLines: 2,
                   ),
                   autocorrect: false,
                   onSaved: (e) => _password = e,
@@ -301,14 +303,13 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
-    _loginBloc = BlocProvider.of<login.LoginBloc>(context);
-    _registerBloc = BlocProvider.of<register.RegisterBloc>(context);
     return BlocListenerTree(
       blocListeners: [
         BlocListener<register.RegisterEvent, register.RegisterState>(
           bloc: _registerBloc,
           listener: (BuildContext context, register.RegisterState state) {
             if (state.isSubmitting) {
+              toggle();
               Scaffold.of(context)
                 ..hideCurrentSnackBar()
                 ..showSnackBar(
@@ -324,9 +325,11 @@ class _LoginFormState extends State<LoginForm> {
                 );
             }
             if (state.isSuccess) {
+              toggle();
               BlocProvider.of<AuthenticationBloc>(context).dispatch(LoggedIn());
             }
             if (state.isFailure) {
+              toggle();
               Scaffold.of(context)
                 ..hideCurrentSnackBar()
                 ..showSnackBar(
@@ -348,6 +351,7 @@ class _LoginFormState extends State<LoginForm> {
           bloc: _loginBloc,
           listener: (BuildContext context, login.LoginState state) {
             if (state.isFailure) {
+              toggle();
               Scaffold.of(context)
                 ..hideCurrentSnackBar()
                 ..showSnackBar(
@@ -361,6 +365,7 @@ class _LoginFormState extends State<LoginForm> {
                 );
             }
             if (state.isSubmitting) {
+              toggle();
               Scaffold.of(context)
                 ..hideCurrentSnackBar()
                 ..showSnackBar(
@@ -376,6 +381,7 @@ class _LoginFormState extends State<LoginForm> {
                 );
             }
             if (state.isSuccess) {
+              toggle();
               BlocProvider.of<AuthenticationBloc>(context).dispatch(LoggedIn());
             }
           },
@@ -383,28 +389,15 @@ class _LoginFormState extends State<LoginForm> {
       ],
       child: BlocBuilder(
         bloc: _loginBloc,
-        builder: (BuildContext context, login.LoginState state) {
+        builder: (BuildContext context, login.LoginState stateL) {
           return Padding(
             padding: EdgeInsets.all(20.0),
             child: Form(
               key: _loginFormKey,
               child: ListView(
                 children: <Widget>[
-                  fields(state),
-                  buttons(state),
-                  // Padding(
-                  //   padding: EdgeInsets.symmetric(vertical: 20),
-                  //   child: Column(
-                  //     crossAxisAlignment: CrossAxisAlignment.stretch,
-                  //     children: <Widget>[
-                  //       LoginButton(
-                  //         onPressed:
-                  //             isEnabled(state) ? submit : null,
-                  //       ),
-                  //       CreateAccountButton(userRepository: _userRepository),
-                  //     ],
-                  //   ),
-                  // ),
+                  fields(),
+                  buttons(),
                 ],
               ),
             ),
