@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:whispery/user_repository.dart';
 import 'package:whispery/login/login.dart';
+import 'package:whispery/register/register.dart';
 
 class LoginScreen extends StatefulWidget {
   final UserRepository _userRepository;
@@ -16,6 +17,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   LoginBloc _loginBloc;
+  RegisterBloc _registerBloc;
 
   UserRepository get _userRepository => widget._userRepository;
 
@@ -25,14 +27,20 @@ class _LoginScreenState extends State<LoginScreen> {
     _loginBloc = LoginBloc(
       userRepository: _userRepository,
     );
+    _registerBloc = RegisterBloc(
+      userRepository: _userRepository,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Login')),
-      body: BlocProvider<LoginBloc>(
-        bloc: _loginBloc,
+      body: BlocProviderTree(
+        blocProviders: [
+          BlocProvider<LoginBloc>(bloc: _loginBloc),
+          BlocProvider<RegisterBloc>(bloc: _registerBloc),
+        ],
         child: LoginForm(userRepository: _userRepository),
       ),
     );
@@ -41,6 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void dispose() {
     _loginBloc.dispose();
+    _registerBloc.dispose();
     super.dispose();
   }
 }

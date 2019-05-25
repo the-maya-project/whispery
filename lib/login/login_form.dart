@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:whispery/globals/strings.dart';
 import 'package:whispery/user_repository.dart';
 import 'package:whispery/authentication_bloc/bloc.dart';
-import 'package:whispery/login/login.dart';
+import 'package:whispery/login/login.dart' as login;
+import 'package:email_validator/email_validator.dart';
+import 'package:whispery/validators.dart';
+import 'package:whispery/register/register.dart' as register;
 
 class LoginForm extends StatefulWidget {
   final UserRepository _userRepository;
@@ -15,151 +19,397 @@ class LoginForm extends StatefulWidget {
   State<LoginForm> createState() => _LoginFormState();
 }
 
+enum FormType { login, register }
+
 class _LoginFormState extends State<LoginForm> {
+  static final _loginFormKey = GlobalKey<FormState>();
+
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _validPasswordController =
+      TextEditingController();
 
-  LoginBloc _loginBloc;
+  // Set inital form type to be login.
+  FormType _formType = FormType.login;
+
+  login.LoginBloc _loginBloc;
+  register.RegisterBloc _registerBloc;
+
+  // String value for form fields.
+  String _email;
+  String _password;
+  String _validPassword;
 
   UserRepository get _userRepository => widget._userRepository;
 
-  bool get isPopulated =>
-      _emailController.text.isNotEmpty && _passwordController.text.isNotEmpty;
+  bool isEnabled(login.LoginState state) {
+    return !state.isFormValid && state.isSubmitting;
+  }
 
-  bool isLoginButtonEnabled(LoginState state) {
-    return state.isFormValid && isPopulated && !state.isSubmitting;
+  void submit() {
+    FormState form = _loginFormKey.currentState;
+    form.save();
+    print(_email);
+    print(_password);
+    print(_validPassword);
+    if (form.validate()) {
+      switch (_formType) {
+        case FormType.login:
+          _onLoginSubmitted();
+          break;
+        case FormType.register:
+          _onRegisterSubmitted();
+          break;
+        default:
+          return null;
+      }
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    _loginBloc = BlocProvider.of<LoginBloc>(context);
-    _emailController.addListener(_onEmailChanged);
-    _passwordController.addListener(_onPasswordChanged);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocListener(
-      bloc: _loginBloc,
-      listener: (BuildContext context, LoginState state) {
-        if (state.isFailure) {
-          Scaffold.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(
-              SnackBar(
-                content: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [Text('Login Failure'), Icon(Icons.error)],
-                ),
-                backgroundColor: Colors.red,
-              ),
-            );
-        }
-        if (state.isSubmitting) {
-          Scaffold.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(
-              SnackBar(
-                content: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Logging In...'),
-                    CircularProgressIndicator(),
-                  ],
-                ),
-              ),
-            );
-        }
-        if (state.isSuccess) {
-          BlocProvider.of<AuthenticationBloc>(context).dispatch(LoggedIn());
-        }
-      },
-      child: BlocBuilder(
-        bloc: _loginBloc,
-        builder: (BuildContext context, LoginState state) {
-          return Padding(
-            padding: EdgeInsets.all(20.0),
-            child: Form(
-              child: ListView(
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 20),
-                    child: Image.asset('assets/flutter_logo.png', height: 200),
-                  ),
-                  TextFormField(
-                    controller: _emailController,
-                    decoration: InputDecoration(
-                      icon: Icon(Icons.email),
-                      labelText: 'Email',
-                    ),
-                    autovalidate: true,
-                    autocorrect: false,
-                    validator: (_) {
-                      return !state.isEmailValid ? 'Invalid Email' : null;
-                    },
-                  ),
-                  TextFormField(
-                    controller: _passwordController,
-                    decoration: InputDecoration(
-                      icon: Icon(Icons.lock),
-                      labelText: 'Password',
-                    ),
-                    obscureText: true,
-                    autovalidate: true,
-                    autocorrect: false,
-                    validator: (_) {
-                      return !state.isPasswordValid ? 'Invalid Password' : null;
-                    },
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[
-                        LoginButton(
-                          onPressed: isLoginButtonEnabled(state)
-                              ? _onFormSubmitted
-                              : null,
-                        ),
-                        GoogleLoginButton(),
-                        CreateAccountButton(userRepository: _userRepository),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
-    );
+    // _loginBloc = BlocProvider.of<login.LoginBloc>(context);
+    // _registerBloc = BlocProvider.of<register.RegisterBloc>(context);
   }
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _validPasswordController.dispose();
     super.dispose();
   }
 
-  void _onEmailChanged() {
+  /// Switch to Register form.
+  void moveToRegister() {
+    _loginFormKey.currentState.reset();
+    setState(() {
+      _formType = FormType.register;
+    });
+  }
+
+  /// Switch to Login form.
+  void moveToLogin() {
+    _loginFormKey.currentState.reset();
+    setState(() {
+      _formType = FormType.login;
+    });
+  }
+
+  /// Dispatch login submission.
+  void _onLoginSubmitted() {
     _loginBloc.dispatch(
-      EmailChanged(email: _emailController.text),
+      login.LoginWithCredentialsPressed(
+        email: _email,
+        password: _password,
+      ),
     );
   }
 
-  void _onPasswordChanged() {
-    _loginBloc.dispatch(
-      PasswordChanged(password: _passwordController.text),
-    );
-  }
-
-  void _onFormSubmitted() {
-    _loginBloc.dispatch(
-      LoginWithCredentialsPressed(
+  /// Dispatch register submission.
+  void _onRegisterSubmitted() {
+    _registerBloc.dispatch(
+      register.Submitted(
         email: _emailController.text,
         password: _passwordController.text,
+      ),
+    );
+  }
+
+  Widget buttons(login.LoginState state) {
+    switch (_formType) {
+      case FormType.login:
+        return Container(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Container(
+                child: RaisedButton(
+                  child: Text("Login"),
+                  onPressed: isEnabled(state) ? null : submit,
+                ),
+              ),
+              Container(
+                child: RaisedButton(
+                  child: Text("Sign Up?"),
+                  onPressed: isEnabled(state) ? null : moveToRegister,
+                ),
+              ),
+            ],
+          ),
+        );
+      case FormType.register:
+        return Container(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Container(
+                child: RaisedButton(
+                  child: Text("Register"),
+                  onPressed: isEnabled(state) ? null : submit,
+                ),
+              ),
+              Container(
+                child: RaisedButton(
+                  child: Text("Login?"),
+                  onPressed: isEnabled(state) ? null : moveToLogin,
+                ),
+              ),
+            ],
+          ),
+        );
+      default:
+        return null;
+    }
+  }
+
+  Widget fields(state) {
+    switch (_formType) {
+      case FormType.login:
+        return Container(
+          child: Column(
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 10),
+                child: TextFormField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.all(12),
+                    hintText: 'Email',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.zero,
+                    ),
+                  ),
+                  autocorrect: false,
+                  onSaved: (e) => _email = e,
+                  validator: (e) {
+                    if (e.isEmpty) return Strings.emptyField;
+                    if (!EmailValidator.validate(e))
+                      return Strings.invalidEmail;
+                  },
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 10),
+                child: TextFormField(
+                  controller: _passwordController,
+                  keyboardType: TextInputType.text,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.all(12),
+                    hintText: 'Password',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.zero,
+                    ),
+                  ),
+                  autocorrect: false,
+                  onSaved: (e) => _password = e,
+                  validator: (e) {
+                    if (e.isEmpty) return Strings.emptyField;
+                    if (e.length < 8) return Strings.invalidPassword;
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      case FormType.register:
+        return Container(
+          child: Column(
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 10),
+                child: TextFormField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.all(12),
+                    hintText: 'Email',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.zero,
+                    ),
+                  ),
+                  autocorrect: false,
+                  onSaved: (e) => _email = e,
+                  validator: (e) {
+                    if (e.isEmpty) return Strings.emptyField;
+                    if (!EmailValidator.validate(e))
+                      return Strings.invalidEmail;
+                    if (e.length < 8) return Strings.invalidPassword;
+                  },
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 10),
+                child: TextFormField(
+                  controller: _passwordController,
+                  keyboardType: TextInputType.text,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.all(12),
+                    hintText: 'Password',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.zero,
+                    ),
+                    errorMaxLines: 2,
+                  ),
+                  autocorrect: false,
+                  onSaved: (e) => _password = e,
+                  validator: (e) {
+                    if (e.isEmpty) return Strings.emptyField;
+                    if (!Validators.isValidPassword(e))
+                      return Strings.invalidPassword;
+                    if (_password != _validPassword)
+                      return Strings.passwordMismatch;
+                  },
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 10),
+                child: TextFormField(
+                  controller: _validPasswordController,
+                  keyboardType: TextInputType.text,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.all(12),
+                    hintText: 'Reenter Password',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.zero,
+                    ),
+                    errorMaxLines: 2,
+                  ),
+                  autocorrect: false,
+                  onSaved: (e) => _validPassword = e,
+                  validator: (e) {
+                    if (e.isEmpty) return Strings.emptyField;
+                    if (!Validators.isValidPassword(e))
+                      return Strings.invalidPassword;
+                    if (_password != _validPassword)
+                      return Strings.passwordMismatch;
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      default:
+        return null;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    _loginBloc = BlocProvider.of<login.LoginBloc>(context);
+    _registerBloc = BlocProvider.of<register.RegisterBloc>(context);
+    return BlocListenerTree(
+      blocListeners: [
+        BlocListener<register.RegisterEvent, register.RegisterState>(
+          bloc: _registerBloc,
+          listener: (BuildContext context, register.RegisterState state) {
+            if (state.isSubmitting) {
+              Scaffold.of(context)
+                ..hideCurrentSnackBar()
+                ..showSnackBar(
+                  SnackBar(
+                    content: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Registering...'),
+                        CircularProgressIndicator(),
+                      ],
+                    ),
+                  ),
+                );
+            }
+            if (state.isSuccess) {
+              BlocProvider.of<AuthenticationBloc>(context).dispatch(LoggedIn());
+            }
+            if (state.isFailure) {
+              Scaffold.of(context)
+                ..hideCurrentSnackBar()
+                ..showSnackBar(
+                  SnackBar(
+                    content: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Registration Failure'),
+                        Icon(Icons.error),
+                      ],
+                    ),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+            }
+          },
+        ),
+        BlocListener<login.LoginEvent, login.LoginState>(
+          bloc: _loginBloc,
+          listener: (BuildContext context, login.LoginState state) {
+            if (state.isFailure) {
+              Scaffold.of(context)
+                ..hideCurrentSnackBar()
+                ..showSnackBar(
+                  SnackBar(
+                    content: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [Text('Login Failure'), Icon(Icons.error)],
+                    ),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+            }
+            if (state.isSubmitting) {
+              Scaffold.of(context)
+                ..hideCurrentSnackBar()
+                ..showSnackBar(
+                  SnackBar(
+                    content: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Logging In...'),
+                        CircularProgressIndicator(),
+                      ],
+                    ),
+                  ),
+                );
+            }
+            if (state.isSuccess) {
+              BlocProvider.of<AuthenticationBloc>(context).dispatch(LoggedIn());
+            }
+          },
+        ),
+      ],
+      child: BlocBuilder(
+        bloc: _loginBloc,
+        builder: (BuildContext context, login.LoginState state) {
+          return Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Form(
+              key: _loginFormKey,
+              child: ListView(
+                children: <Widget>[
+                  fields(state),
+                  buttons(state),
+                  // Padding(
+                  //   padding: EdgeInsets.symmetric(vertical: 20),
+                  //   child: Column(
+                  //     crossAxisAlignment: CrossAxisAlignment.stretch,
+                  //     children: <Widget>[
+                  //       LoginButton(
+                  //         onPressed:
+                  //             isEnabled(state) ? submit : null,
+                  //       ),
+                  //       CreateAccountButton(userRepository: _userRepository),
+                  //     ],
+                  //   ),
+                  // ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }
