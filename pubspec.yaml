@@ -62,14 +62,14 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-    - family: Karla
+    - family: Barlow
       fonts:
-        - asset: assets/Karla-Regular.ttf
-        - asset: assets/Karla-Italic.ttf
+        - asset: assets/BarlowCondensed-Regular.ttf
+        - asset: assets/BarlowCondensed-Italic.ttf
           style: italic
-        - asset: assets/Karla-Bold.ttf
+        - asset: assets/BarlowCondensed-Bold.ttf
           weight: 700
-        - asset: assets/Karla-BoldItalic.ttf
+        - asset: assets/BarlowCondensed-BoldItalic.ttf
           weight: 700
           style: italic
 
