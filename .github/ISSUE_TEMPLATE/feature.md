@@ -1,7 +1,7 @@
 ---
 name: Feature
 about: Template for feature request.
-title: "[FEAT]"
+title: ''
 labels: ''
 assignees: ''
 
