@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:whispery/authentication_bloc/bloc.dart';
+import 'package:whispery/home_page.dart';
 import 'package:whispery/user_repository.dart';
-import 'package:whispery/home_screen.dart';
 import 'package:whispery/login/login.dart';
 import 'package:whispery/splash_screen.dart';
 import 'package:whispery/simple_bloc_delegate.dart';
@@ -44,7 +44,8 @@ class _AppState extends State<App> {
               return LoginScreen(userRepository: _userRepository);
             }
             if (state is Authenticated) {
-              return HomeScreen(name: state.displayName);
+              //return HomeScreen(name: state.displayName);
+              return HomePage();
             }
           },
         ),
