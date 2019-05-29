@@ -1,4 +1,4 @@
-package com.example.whispery;
+package com.themayaproject.whispery;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;

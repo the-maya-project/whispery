@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "31397577482",
+    "firebase_url": "https://themayaproject-2b17b.firebaseio.com",
+    "project_id": "themayaproject-2b17b",
+    "storage_bucket": "themayaproject-2b17b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:31397577482:android:41f39c4cbb155ae1",
+        "android_client_info": {
+          "package_name": "com.themayaproject.whispery"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "31397577482-me3qvk261qtlbjn5sto5v4r15u77a97q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.themayaproject.whispery",
+            "certificate_hash": "a83304dd43263e5f1cfc16b178e3d054270a2181"
+          }
+        },
+        {
+          "client_id": "31397577482-q397mao23g9gvi8bbkcmvpbtmebic2a0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkPizPA1RdLBrsTJ1D3_x2zfqKHo8Iddg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "31397577482-q397mao23g9gvi8bbkcmvpbtmebic2a0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "31397577482-sqocfl6ekt86s2hqpctp2s5k54p2dfsf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.themayaproject.whispery"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
