@@ -23,6 +23,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  firebase_core: ^0.2.5  # add dependency for Firebase Core
 
 
 # For information on the generic Dart part of this file, see the
