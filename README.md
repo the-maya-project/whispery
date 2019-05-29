@@ -1,18 +1,20 @@
 [![Build Status](https://travis-ci.com/the-maya-project/whispery.svg?branch=master)](https://travis-ci.com/the-maya-project/whispery)
 
-# whispery
+# Whispery 🐤
+Whispery is a geo-location based, social networking application written with Flutter.
 
-A new Flutter project.
+## About
+Whispery is a spanking new social networking application designed to mimic real world interactions by aggregating chatter by location. Users can remain anonymous and contribute to the self-moderating community.
 
-## Getting Started
+## Contribute
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+Please make sure to update tests as appropriate.
 
-This project is a starting point for a Flutter application.
+Like to join the team? Drop us an email at addisonho@outlook.com
 
-A few resources to get you started if this is your first Flutter project:
+## Support
+Whispery is still a **work in progress**, use the application at your own discretion.
+Issues and bugs found can be directed to the Issue Tracker or contact the administrator: addisonho@outlook.com
 
-- [Lab: Write your first Flutter app](https://flutter.io/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.io/docs/cookbook)
-
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.io/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+## License
+Whispery is under the copyright of The Maya Project and the core Maya team. Unauthorized use and distribution is not allowed.
