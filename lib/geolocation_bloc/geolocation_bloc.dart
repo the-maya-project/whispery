@@ -31,9 +31,6 @@ class AuthenticationBloc
   Stream<AuthenticationState> _mapAppStartedToState() async* {
     try {
       final isSignedIn = await _userRepository.isSignedIn();
-
-      /// Artificial delay to avoid jarring incoming [SplashScreen].
-      await Future.delayed(const Duration(seconds: 1), () {});
       if (isSignedIn) {
         final name = await _userRepository.getUser();
         yield Authenticated(name);

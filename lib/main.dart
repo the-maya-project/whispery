@@ -8,19 +8,24 @@ import 'package:whispery/login/login.dart';
 import 'package:whispery/splash_screen.dart';
 import 'package:whispery/simple_bloc_delegate.dart';
 
+/// Main driver method.
 main() {
   BlocSupervisor().delegate = SimpleBlocDelegate();
   runApp(App());
 }
 
+/// Initial App state.
 class App extends StatefulWidget {
   State<App> createState() => _AppState();
 }
 
 class _AppState extends State<App> {
+
+  /// Initalize [UserRepository] and [AuthenticationBloc] for credential checks.
   final UserRepository _userRepository = UserRepository();
   AuthenticationBloc _authenticationBloc;
 
+  /// Dispatch event to [AuthenticationBloc] to start authentication process.
   @override
   void initState() {
     super.initState();
@@ -28,6 +33,10 @@ class _AppState extends State<App> {
     _authenticationBloc.dispatch(AppStarted());
   }
 
+  /// Build method for authentication.
+  /// If [Uninitailized], navigate to [SplashScreen] while awaiting [AuthenticationBloc] response.
+  /// If [Unauthenticated], navigate to [LoginScreen] for first time user setup.
+  /// If [Authenticated], navigate to [FeedPage] after credentials have been authorized.
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -44,7 +53,6 @@ class _AppState extends State<App> {
               return LoginScreen(userRepository: _userRepository);
             }
             if (state is Authenticated) {
-              //return HomeScreen(name: state.displayName);
               return HomePage();
             }
           },
@@ -53,6 +61,7 @@ class _AppState extends State<App> {
     );
   }
 
+  /// Dispose all BLoCs from the widget tree on exit to release resources.
   @override
   void dispose() {
     _authenticationBloc.dispose();

@@ -6,7 +6,7 @@ import 'package:whispery/authentication_bloc/bloc.dart';
 import 'package:whispery/login/login.dart' as login;
 import 'package:email_validator/email_validator.dart';
 import 'package:whispery/validators.dart';
-import 'package:whispery/register/register.dart' as register;
+import 'package:whispery/register/bloc/bloc.dart' as register;
 
 class LoginForm extends StatefulWidget {
   final UserRepository _userRepository;

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:whispery/user_repository.dart';
 import 'package:whispery/login/login.dart';
-import 'package:whispery/register/register.dart';
+import 'package:whispery/register/bloc/bloc.dart';
 
 class LoginScreen extends StatefulWidget {
   final UserRepository _userRepository;
