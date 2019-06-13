@@ -1,53 +1,43 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:meta/meta.dart';
-import 'package:whispery/authentication_bloc/bloc.dart';
-import 'package:whispery/user_repository.dart';
+import 'package:whispery/geolocation_bloc/bloc.dart';
+import 'package:geolocator/geolocator.dart';
 
-class AuthenticationBloc
-    extends Bloc<AuthenticationEvent, AuthenticationState> {
-  final UserRepository _userRepository;
-
-  AuthenticationBloc({@required UserRepository userRepository})
-      : assert(userRepository != null),
-        _userRepository = userRepository;
+class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
+  @override
+  GeolocationState get initialState => GeolocationDisabled();
 
   @override
-  AuthenticationState get initialState => Uninitialized();
-
-  @override
-  Stream<AuthenticationState> mapEventToState(
-    AuthenticationEvent event,
-  ) async* {
-    if (event is AppStarted) {
-      yield* _mapAppStartedToState();
-    } else if (event is LoggedIn) {
-      yield* _mapLoggedInToState();
-    } else if (event is LoggedOut) {
-      yield* _mapLoggedOutToState();
+  Stream<GeolocationState> mapEventToState(GeolocationEvent event) async* {
+    if (event is RequestStatus) {
+      yield* _mapGeolocationRequestStatus();
+    } else if (event is RequestLocation) {
+      yield* _mapGeolocationRequestLocation();
     }
   }
 
-  Stream<AuthenticationState> _mapAppStartedToState() async* {
-    try {
-      final isSignedIn = await _userRepository.isSignedIn();
-      if (isSignedIn) {
-        final name = await _userRepository.getUser();
-        yield Authenticated(name);
-      } else {
-        yield Unauthenticated();
-      }
-    } catch (_) {
-      yield Unauthenticated();
+  Stream<GeolocationState> _mapGeolocationRequestStatus() async* {
+    var geolocator = Geolocator();
+    final status = await geolocator.checkGeolocationPermissionStatus();
+    if (status == GeolocationStatus.denied) {
+      yield GeolocationDenied();
+    } else if (status == GeolocationStatus.disabled) {
+      yield GeolocationDisabled();
+    } else if (status == GeolocationStatus.restricted) {
+      yield GeolocationRestricted();
+    } else if (status == GeolocationStatus.unknown) {
+      yield GeolocationUnknown();
+    } else if (status == GeolocationStatus.granted) {
+      yield GeolocationGranted();
     }
   }
 
-  Stream<AuthenticationState> _mapLoggedInToState() async* {
-    yield Authenticated(await _userRepository.getUser());
-  }
-
-  Stream<AuthenticationState> _mapLoggedOutToState() async* {
-    yield Unauthenticated();
-    _userRepository.signOut();
+  Stream<GeolocationState> _mapGeolocationRequestLocation() async* {
+    Position position = await Geolocator().getCurrentPosition();
+    if (position.latitude == null || position.longitude == null) {
+      yield GeolocationDenied();
+    } else {
+      yield LocationLoaded(position.latitude, position.longitude);
+    }
   }
 }

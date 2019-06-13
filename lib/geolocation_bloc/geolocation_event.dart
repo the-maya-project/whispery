@@ -2,21 +2,16 @@ import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
 @immutable
-abstract class AuthenticationEvent extends Equatable {
-  AuthenticationEvent([List props = const []]) : super(props);
+abstract class GeolocationEvent extends Equatable {
+  GeolocationEvent([List props = const []]) : super(props);
 }
 
-class AppStarted extends AuthenticationEvent {
+class RequestLocation extends GeolocationEvent {
   @override
-  String toString() => 'AppStarted';
+  String toString() => 'RequestLocation';
 }
 
-class LoggedIn extends AuthenticationEvent {
+class RequestStatus extends GeolocationEvent {
   @override
-  String toString() => 'LoggedIn';
-}
-
-class LoggedOut extends AuthenticationEvent {
-  @override
-  String toString() => 'LoggedOut';
+  String toString() => 'RequestStatus';
 }
