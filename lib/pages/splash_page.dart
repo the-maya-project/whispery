@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 /// Placeholder splash screen for authentication during BLoC logic.
-class SplashScreen extends StatelessWidget {
+class SplashPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

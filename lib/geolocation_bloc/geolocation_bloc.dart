@@ -5,7 +5,7 @@ import 'package:geolocator/geolocator.dart';
 
 class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
   @override
-  GeolocationState get initialState => GeolocationDisabled();
+  GeolocationState get initialState => GeolocationUninitialized();
 
   @override
   Stream<GeolocationState> mapEventToState(GeolocationEvent event) async* {
@@ -33,11 +33,23 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
   }
 
   Stream<GeolocationState> _mapGeolocationRequestLocation() async* {
-    Position position = await Geolocator().getCurrentPosition();
-    if (position.latitude == null || position.longitude == null) {
-      yield GeolocationDenied();
+    Position position;
+    var status = await Geolocator().checkGeolocationPermissionStatus();
+    if (status == GeolocationStatus.granted) {
+      position = await Geolocator()
+          .getCurrentPosition()
+          .timeout(Duration(seconds: 1),
+          onTimeout: (){
+            return null;
+          });
+      if (position == null) {
+        position = await Geolocator().getLastKnownPosition();
+        yield LocationLoaded(position.latitude, position.longitude);
+      } else {
+        yield LocationLoaded(position.latitude, position.longitude);
+      }
     } else {
-      yield LocationLoaded(position.latitude, position.longitude);
+      yield GeolocationOff();
     }
   }
 }

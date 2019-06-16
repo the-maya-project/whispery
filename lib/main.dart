@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:whispery/authentication_bloc/bloc.dart';
-import 'package:whispery/home_page.dart';
+import 'package:whispery/pages/landing_page.dart';
+import 'package:whispery/pages/splash_page.dart';
 import 'package:whispery/user_repository.dart';
 import 'package:whispery/login/login.dart';
-import 'package:whispery/splash_screen.dart';
-import 'package:whispery/simple_bloc_delegate.dart';
+import 'package:whispery/helpers/simple_bloc_delegate.dart';
 
 /// Main driver method.
-main() {
+void main() {
   BlocSupervisor().delegate = SimpleBlocDelegate();
   runApp(App());
 }
@@ -20,7 +21,6 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-
   /// Initalize [UserRepository] and [AuthenticationBloc] for credential checks.
   final UserRepository _userRepository = UserRepository();
   AuthenticationBloc _authenticationBloc;
@@ -47,13 +47,13 @@ class _AppState extends State<App> {
           bloc: _authenticationBloc,
           builder: (BuildContext context, AuthenticationState state) {
             if (state is Uninitialized) {
-              return SplashScreen();
+              return SplashPage();
             }
             if (state is Unauthenticated) {
               return LoginScreen(userRepository: _userRepository);
             }
             if (state is Authenticated) {
-              return HomePage();
+              return LandingPage();
             }
           },
         ),

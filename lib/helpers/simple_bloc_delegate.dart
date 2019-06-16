@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 
+/// A BLoC delegate to track transitions during BLoC streams.
 class SimpleBlocDelegate extends BlocDelegate {
   @override
   void onEvent(Bloc bloc, Object event) {

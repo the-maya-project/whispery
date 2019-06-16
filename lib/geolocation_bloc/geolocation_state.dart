@@ -6,11 +6,6 @@ abstract class GeolocationState extends Equatable {
   GeolocationState([List props = const []]) : super(props);
 }
 
-// class Uninitialized extends GeolocationState {
-//   @override
-//   String toString() => 'Uninitialized';
-// }
-
 class LocationLoaded extends GeolocationState {
   final double latitude;
   final double longitude;
@@ -22,10 +17,10 @@ class LocationLoaded extends GeolocationState {
       'LocationLoaded { latitude: $latitude, longitude: $longitude}';
 }
 
-// class Unauthenticated extends GeolocationState {
-//   @override
-//   String toString() => 'Unauthenticated';
-// }
+class GeolocationUninitialized extends GeolocationState {
+  @override
+  String toString() => 'GeolocationUninitialized';
+}
 
 class GeolocationDenied extends GeolocationState {
   @override
@@ -37,11 +32,6 @@ class GeolocationDisabled extends GeolocationState {
   String toString() => 'GeolocationDisabled';
 }
 
-class GeolocationGranted extends GeolocationState {
-  @override
-  String toString() => 'GeolocationGranted';
-}
-
 class GeolocationRestricted extends GeolocationState {
   @override
   String toString() => 'GeolocationRestricted';
@@ -50,4 +40,14 @@ class GeolocationRestricted extends GeolocationState {
 class GeolocationUnknown extends GeolocationState {
   @override
   String toString() => 'GeolocationUnknown';
+}
+
+class GeolocationGranted extends GeolocationState {
+  @override
+  String toString() => 'GeolocationGranted';
+}
+
+class GeolocationOff extends GeolocationState {
+  @override
+  String toString() => 'GeolocationOff';
 }
