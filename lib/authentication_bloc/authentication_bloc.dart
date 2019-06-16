@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:whispery/authentication_bloc/bloc.dart';
-import 'package:whispery/user_repository.dart';
+import 'package:whispery/helpers/user_repository.dart';
 
 class AuthenticationBloc
     extends Bloc<AuthenticationEvent, AuthenticationState> {

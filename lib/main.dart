@@ -5,8 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:whispery/authentication_bloc/bloc.dart';
 import 'package:whispery/pages/landing_page.dart';
 import 'package:whispery/pages/splash_page.dart';
-import 'package:whispery/user_repository.dart';
 import 'package:whispery/login/login.dart';
+import 'package:whispery/helpers/user_repository.dart';
 import 'package:whispery/helpers/simple_bloc_delegate.dart';
 
 /// Main driver method.

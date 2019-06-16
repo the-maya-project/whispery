@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:whispery/globals/strings.dart';
-import 'package:whispery/user_repository.dart';
+import 'package:whispery/helpers/user_repository.dart';
 import 'package:whispery/authentication_bloc/bloc.dart';
 import 'package:whispery/login/login.dart' as login;
 import 'package:email_validator/email_validator.dart';
-import 'package:whispery/validators.dart';
+import 'package:whispery/helpers/validators.dart';
 import 'package:whispery/register/bloc/bloc.dart' as register;
 
 class LoginForm extends StatefulWidget {

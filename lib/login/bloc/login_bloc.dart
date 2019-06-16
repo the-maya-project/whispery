@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:whispery/login/bloc/bloc.dart';
-import 'package:whispery/user_repository.dart';
+import 'package:whispery/helpers/user_repository.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   UserRepository _userRepository;
