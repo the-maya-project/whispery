@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:whispery/components/header.dart';
+import 'package:whispery/components/long_button.dart';
+import 'package:whispery/components/post_field.dart';
+import 'package:whispery/components/radiobox.dart';
 
 /// The post page of Whispery.
 class PostPage extends StatefulWidget {
@@ -15,9 +19,27 @@ class _PostPageState extends State<PostPage>
   /// Placeholder widget for post page.
   @override
   Widget build(BuildContext context) {
-    return Container(
-        child: Center(
-      child: Text("Post Page"),
-    ));
+    return Scaffold(
+      body: ListView(
+        children: <Widget>[
+          Header(
+            title: "post",
+          ),
+          PostField(),
+          RadioBox(
+            text: 'Post anonymously.',
+          ),
+          RadioBox(
+            text: 'I will post in good faith.',
+          ),
+          RadioBox(
+            text: 'I adhered to Whispery\'s terms.',
+          ),
+          LongButton(
+            text: 'ignite',
+          )
+        ],
+      ),
+    );
   }
 }
