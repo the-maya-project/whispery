@@ -93,7 +93,10 @@ class _FeedPageState extends State<FeedPage>
                 if (state is LocationLoaded) {
                   lat = state.latitude;
                   long = state.longitude;
-                  _postBloc.dispatch(Refresh());
+                  _postBloc.dispatch(Fetch());
+                  setState(() {
+                    
+                  });
                 }
                 if (state is GeolocationDisabled) {
                   Scaffold.of(context)
@@ -182,15 +185,12 @@ class _FeedPageState extends State<FeedPage>
           child: BlocBuilder(
             bloc: _postBloc,
             builder: (BuildContext context, PostState state) {
-              print("xx");
               if (state is PostUninitialized) {
-                print("-");
                 return Center(
                   child: CircularProgressIndicator(),
                 );
               }
               if (state is PostError) {
-                print("-");
                 return Center(
                   child: Text('failed to fetch posts'),
                 );
@@ -205,7 +205,7 @@ class _FeedPageState extends State<FeedPage>
                   return SmartRefresher(
                     enablePullDown: true,
                     enablePullUp: false,
-                    header: WaterDropMaterialHeader(),
+                    header: ClassicHeader(),
                     controller: _refreshController,
                     onRefresh: _onRefresh,
                     child: ListView.builder(

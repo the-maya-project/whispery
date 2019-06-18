@@ -1,10 +1,7 @@
-import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
 @immutable
-abstract class GeolocationEvent extends Equatable {
-  GeolocationEvent([List props = const []]) : super(props);
-}
+abstract class GeolocationEvent {}
 
 class RequestLocation extends GeolocationEvent {
   @override

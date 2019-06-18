@@ -1,16 +1,13 @@
-import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
 @immutable
-abstract class GeolocationState extends Equatable {
-  GeolocationState([List props = const []]) : super(props);
-}
+abstract class GeolocationState {}
 
 class LocationLoaded extends GeolocationState {
   final double latitude;
   final double longitude;
 
-  LocationLoaded(this.latitude, this.longitude) : super([latitude, longitude]);
+  LocationLoaded(this.latitude, this.longitude);
 
   @override
   String toString() =>

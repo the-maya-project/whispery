@@ -36,7 +36,6 @@ class PostBloc extends Bloc<PostEvent, PostState> {
         if (currentState is PostUninitialized) {
           final posts = await _fetchPosts(0, 20);
           yield PostLoaded(posts: posts, hasReachedMax: false);
-          return;
         }
         if (currentState is PostLoaded) {
           final posts =
@@ -54,11 +53,6 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     }
     if (event is Refresh) {
       try {
-        if (currentState is PostUninitialized) {
-          final posts = await _fetchPosts(0, 20);
-          yield PostLoaded(posts: posts, hasReachedMax: false);
-          return;
-        }
         if (currentState is PostLoaded) {
           final posts = await _fetchPosts(0, 20);
           yield PostLoaded(posts: posts, hasReachedMax: false);

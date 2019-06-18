@@ -33,23 +33,16 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
   }
 
   Stream<GeolocationState> _mapGeolocationRequestLocation() async* {
-    Position position;
-    var status = await Geolocator().checkGeolocationPermissionStatus();
-    if (status == GeolocationStatus.granted) {
-      position = await Geolocator()
-          .getCurrentPosition()
-          .timeout(Duration(seconds: 1),
-          onTimeout: (){
-            return null;
-          });
-      if (position == null) {
-        position = await Geolocator().getLastKnownPosition();
-        yield LocationLoaded(position.latitude, position.longitude);
-      } else {
-        yield LocationLoaded(position.latitude, position.longitude);
-      }
+    Position position = await Geolocator()
+        .getCurrentPosition()
+        .timeout(Duration(seconds: 1), onTimeout: () {
+      return null;
+    });
+    if (position == null) {
+      position = await Geolocator().getLastKnownPosition();
+      yield LocationLoaded(position.latitude, position.longitude);
     } else {
-      yield GeolocationOff();
+      yield LocationLoaded(position.latitude, position.longitude);
     }
   }
 }
