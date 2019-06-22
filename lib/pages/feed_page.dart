@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
+import 'package:whispery/components/feed_tile.dart';
 
 import 'package:whispery/models/post.dart';
 import 'package:whispery/post_bloc/bloc.dart';
@@ -94,9 +95,7 @@ class _FeedPageState extends State<FeedPage>
                   lat = state.latitude;
                   long = state.longitude;
                   _postBloc.dispatch(Fetch());
-                  setState(() {
-                    
-                  });
+                  setState(() {});
                 }
                 if (state is GeolocationDisabled) {
                   Scaffold.of(context)
@@ -286,10 +285,16 @@ class PostWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(
-        'Index: $index + Latitude: $lat  + Longitude: $long + Radius: $radii',
-      ),
+    // return ListTile(
+    //   title: Text(
+    //     'Index: $index + Latitude: $lat  + Longitude: $long + Radius: $radii',
+    //   ),
+    // );
+    return FeedTile(
+      content: '$index',
+      distance: 100,
+      likeCount: 100,
+      timeStamp: 100,
     );
   }
 }
