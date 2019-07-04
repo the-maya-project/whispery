@@ -20,7 +20,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   ) {
     return super.transform(
       (events as Observable<PostEvent>).debounceTime(
-        Duration(milliseconds: 500),
+        Duration(milliseconds: 1000),
       ),
       next,
     );
@@ -31,11 +31,20 @@ class PostBloc extends Bloc<PostEvent, PostState> {
 
   @override
   Stream<PostState> mapEventToState(PostEvent event) async* {
+    if (event is Refresh) {
+      if (currentState is PostLoaded) {
+        (currentState as PostLoaded).posts.clear();
+      }
+      final posts = await _fetchPosts(0, 20);
+      yield PostLoaded(posts: posts, hasReachedMax: false);
+      return;
+    }
     if (event is Fetch && !_hasReachedMax(currentState)) {
       try {
         if (currentState is PostUninitialized) {
           final posts = await _fetchPosts(0, 20);
           yield PostLoaded(posts: posts, hasReachedMax: false);
+          return;
         }
         if (currentState is PostLoaded) {
           final posts =
@@ -46,16 +55,6 @@ class PostBloc extends Bloc<PostEvent, PostState> {
                   posts: (currentState as PostLoaded).posts + posts,
                   hasReachedMax: false,
                 );
-        }
-      } catch (_) {
-        yield PostError();
-      }
-    }
-    if (event is Refresh) {
-      try {
-        if (currentState is PostLoaded) {
-          final posts = await _fetchPosts(0, 20);
-          yield PostLoaded(posts: posts, hasReachedMax: false);
         }
       } catch (_) {
         yield PostError();

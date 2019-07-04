@@ -27,11 +27,6 @@ class _LandingPageState extends State<LandingPage> {
   ];
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   void dispose() {
     super.dispose();
     _pageViewController.dispose();

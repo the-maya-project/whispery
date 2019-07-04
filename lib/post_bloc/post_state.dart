@@ -33,8 +33,4 @@ class PostLoaded extends PostState {
       hasReachedMax: hasReachedMax ?? this.hasReachedMax,
     );
   }
-
-  @override
-  String toString() =>
-      'PostLoaded { posts: ${posts.length}, hasReachedMax: $hasReachedMax }';
 }

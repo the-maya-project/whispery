@@ -5,7 +5,7 @@ class PasswordField extends StatelessWidget {
   final TextEditingController _passwordController;
 
   PasswordField(
-      {Key key, VoidCallback onSaved, TextEditingController passwordController})
+      {Key key, @required VoidCallback onSaved, @required TextEditingController passwordController})
       : _onSaved = onSaved,
         _passwordController = passwordController,
         super(key: key);

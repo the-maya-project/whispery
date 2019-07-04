@@ -5,7 +5,12 @@ class SplashPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(child: Image.asset("assets/images/splash_screen_bird.png")),
+      body: Container(
+        margin: EdgeInsets.all(120.0),
+        child: Center(
+          child: Image.asset("assets/images/splash_screen_bird.png"),
+        ),
+      ),
     );
   }
 }

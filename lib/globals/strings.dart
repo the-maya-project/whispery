@@ -34,4 +34,7 @@ class Strings {
       "https://us-central1-whispery-1a75a.cloudfunctions.net/postFeed";
   static String commentsFunction =
       "https://us-central1-whispery-1a75a.cloudfunctions.net/commentFeed";
+
+  static String feedFunction = "";
 }
+

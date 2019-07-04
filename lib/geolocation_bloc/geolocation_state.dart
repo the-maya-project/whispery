@@ -11,7 +11,7 @@ class LocationLoaded extends GeolocationState {
 
   @override
   String toString() =>
-      'LocationLoaded { latitude: $latitude, longitude: $longitude}';
+      'LocationLoaded { latitude: $latitude, longitude: $longitude }';
 }
 
 class GeolocationUninitialized extends GeolocationState {
