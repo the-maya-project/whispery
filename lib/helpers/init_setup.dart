@@ -1,9 +1,9 @@
-import 'package:whispery/sharedpreferences_bloc/bloc.dart';
+// import 'package:whispery/sharedpreferences_bloc/bloc.dart';
 
-class InitSetup {
-  SharedPreferenceBloc _sharedPreferenceBloc = SharedPreferenceBloc();
+// class InitSetup {
+//   SharedPreferenceBloc _sharedPreferenceBloc = SharedPreferenceBloc();
 
-  Future<void> setProperties() {
+//   Future<void> setProperties() {
 
-  }
-}
+//   }
+// }

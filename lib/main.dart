@@ -18,21 +18,9 @@ void main() {
   runApp(App());
 }
 
-/// Initial App state.
-class App extends StatefulWidget {
-  State<App> createState() => _AppState();
-}
-
-class _AppState extends State<App> {
-  /// Initalize [UserRepository] and [AuthenticationBloc] for credential checks.
+class App extends StatelessWidget {
   final UserRepository _userRepository = UserRepository();
-  AuthenticationBloc _authenticationBloc;
-  SharedPreferencesBloc _sharedPreferencesBloc;
 
-  /// Build method for authentication.
-  /// If [Uninitailized], navigate to [SplashScreen] while awaiting [AuthenticationBloc] response.
-  /// If [Unauthenticated], navigate to [LoginScreen] for first time user setup.
-  /// If [Authenticated], navigate to [FeedPage] after credentials have been authorized.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -41,40 +29,68 @@ class _AppState extends State<App> {
         blocProviders: [
           BlocProvider<AuthenticationBloc>(
             builder: (BuildContext context) {
-              _authenticationBloc =
+              AuthenticationBloc _authenticationBloc =
                   AuthenticationBloc(userRepository: _userRepository);
+              _authenticationBloc.dispatch(AppStarted());
               return _authenticationBloc;
             },
           ),
           BlocProvider<SharedPreferencesBloc>(
             builder: (BuildContext context) {
-              _sharedPreferencesBloc = SharedPreferencesBloc();
+              SharedPreferencesBloc _sharedPreferencesBloc =
+                  SharedPreferencesBloc();
+              _sharedPreferencesBloc.dispatch(GetRadius());
               return _sharedPreferencesBloc;
             },
           ),
         ],
-        child: BlocListener(
-          bloc: _sharedPreferencesBloc,
-          listener: (BuildContext context, SharedPreferencesState state) {
-            if (state is SharedPreferencesRadiusError) {
-              _sharedPreferencesBloc.dispatch(SetRadius(radius: Config.DEFAULT_RADIUS));
-            }
-          },
-          child: BlocBuilder(
-            bloc: _authenticationBloc,
-            builder: (BuildContext context, AuthenticationState state) {
-              if (state is Uninitialized) {
-                return SplashPage();
-              }
-              if (state is Unauthenticated) {
-                return LoginScreen(userRepository: _userRepository);
-              }
-              if (state is Authenticated) {
-                return LandingPage();
-              }
-            },
-          ),
+        child: Builder(
+          userRepository: _userRepository,
         ),
+      ),
+    );
+  }
+}
+
+class Builder extends StatelessWidget {
+  final UserRepository _userRepository;
+
+  Builder({Key key, @required UserRepository userRepository})
+      : _userRepository = userRepository,
+        super(key: key);
+
+  /// Build method for authentication.
+  /// If [Uninitailized], navigate to [SplashScreen] while awaiting [AuthenticationBloc] response.
+  /// If [Unauthenticated], navigate to [LoginScreen] for first time user setup.
+  /// If [Authenticated], navigate to [FeedPage] after credentials have been authorized.
+  @override
+  Widget build(BuildContext context) {
+    final SharedPreferencesBloc _sharedPreferencesBloc =
+        BlocProvider.of<SharedPreferencesBloc>(context);
+    final AuthenticationBloc _authenticationBloc =
+        BlocProvider.of<AuthenticationBloc>(context);
+
+    return BlocListener(
+      bloc: _sharedPreferencesBloc,
+      listener: (BuildContext context, SharedPreferencesState state) {
+        if (state is SharedPreferencesRadiusError) {
+          _sharedPreferencesBloc
+              .dispatch(SetRadius(radius: Config.DEFAULT_RADIUS));
+        }
+      },
+      child: BlocBuilder(
+        bloc: _authenticationBloc,
+        builder: (BuildContext context, AuthenticationState state) {
+          if (state is Uninitialized) {
+            return SplashPage();
+          }
+          if (state is Unauthenticated) {
+            return LoginScreen(userRepository: _userRepository);
+          }
+          if (state is Authenticated) {
+            return LandingPage();
+          }
+        },
       ),
     );
   }

@@ -20,21 +20,20 @@ class FeedPage extends StatefulWidget {
 /// Mixin with [AutomaticKeepAliveClientMixin] to prevent page from being refreshed when switching between pages.
 class _FeedPageState extends State<FeedPage>
     with AutomaticKeepAliveClientMixin {
-  @override
-
   /// Enable keep alive bit in the mixin.
+  @override
   bool get wantKeepAlive => true;
 
   /// Controllers for managing refresh state and BLoC loaders.
-  final _scrollController = ScrollController();
-  final _scrollThreshold = 200.0;
+  final ScrollController _scrollController = ScrollController();
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
-  final PostBloc _postBloc = PostBloc(httpClient: http.Client());
-  final GeolocationBloc _geolocationBloc = GeolocationBloc();
+
+  PostBloc _postBloc;
+  GeolocationBloc _geolocationBloc;
 
   /// Temp variable for visual
-  double radii = Config.SLIDER_DEFAULT;
+  double radii = Config.DEFAULT_RADIUS;
   double lat = 0;
   double long = 0;
 
@@ -42,7 +41,6 @@ class _FeedPageState extends State<FeedPage>
   @override
   void initState() {
     super.initState();
-    _geolocationBloc.dispatch(RequestLocation());
     _scrollController.addListener(_onScroll);
   }
 
@@ -54,13 +52,6 @@ class _FeedPageState extends State<FeedPage>
     _refreshController.dispose();
     _scrollController.dispose();
     super.dispose();
-  }
-
-  /// Refresh all post in the [FeedPage] by fetching a new location.
-  /// Called by pull-to-refresh and slider.
-  /// Note that refresh disposes all previous requested posts i.e. listviewBuilder is cleared.
-  void _onRefresh() {
-    _geolocationBloc.dispatch(RequestLocation());
   }
 
   /// Slider widget to adjust radius where post are fetched from.
@@ -96,99 +87,26 @@ class _FeedPageState extends State<FeedPage>
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      /// TODO: Show logged in user's username.
       appBar: AppBar(title: Text('Username')),
       body: BlocProviderTree(
         blocProviders: [
-          BlocProvider<PostBloc>(bloc: _postBloc),
-          BlocProvider<GeolocationBloc>(bloc: _geolocationBloc),
-        ],
-        child: BlocListenerTree(
-          blocListeners: [
-            BlocListener<GeolocationEvent, GeolocationState>(
-              bloc: _geolocationBloc,
-              listener: (BuildContext context, GeolocationState state) {
-                /// If BLoC is able to retrieve a location, issue a [PostEvent] to retrieve post based on radius.
-                if (state is LocationLoaded) {
-                  lat = state.latitude;
-                  long = state.longitude;
-                  _postBloc.dispatch(Refresh());
-                }
-
-                /// If Bloc is unable to retrieve a location, throw snackbar to warn user.
-                if (state is GeolocationDisabled) {
-                  Scaffold.of(context)
-                    ..hideCurrentSnackBar()
-                    ..showSnackBar(
-                      SnackBar(
-                        content: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('Geolocation Access Disabled'),
-                            Icon(Icons.error),
-                          ],
-                        ),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                }
-              },
-            ),
-          ],
-          child: BlocBuilder(
-            bloc: _postBloc,
-            builder: (BuildContext context, PostState state) {
-              /// Draw an indicator of [PostEvent] is uninitalized.
-              if (state is PostUninitialized) {
-                return Center(
-                  child: LoadingIndicator(),
-                );
-              }
-
-              /// If the PostBLoc is unable to query to the database, warn user.
-              if (state is PostError) {
-                return Center(
-                  child: Text('failed to fetch posts'),
-                );
-              }
-
-              /// If PostLoaded, populate and draw listviewBuilder.
-              if (state is PostLoaded) {
-                /// Unset refresh controller.
-                _refreshController.refreshCompleted();
-                if (state.posts.isEmpty) {
-                  return Center(
-                    child: Text('no posts'),
-                  );
-                } else {
-                  return SmartRefresher(
-                    enablePullDown: true,
-                    enablePullUp: false,
-                    header: ClassicHeader(),
-                    controller: _refreshController,
-                    onRefresh: _onRefresh,
-                    child: ListView.builder(
-                      itemBuilder: (BuildContext context, int index) {
-                        return index >= state.posts.length
-                            ? LoadingIndicator()
-                            : PostWidget(
-                                post: state.posts[index],
-                                lat: lat,
-                                long: long,
-                                radii: radii,
-                                index: index,
-                              );
-                      },
-                      itemCount: state.hasReachedMax
-                          ? state.posts.length
-                          : state.posts.length + 1,
-                      controller: _scrollController,
-                    ),
-                  );
-                }
-              }
+          BlocProvider<PostBloc>(
+            builder: (BuildContext context) {
+              _postBloc = PostBloc(httpClient: http.Client());
+              return _postBloc;
             },
           ),
+          BlocProvider<GeolocationBloc>(
+            builder: (BuildContext context) {
+              _geolocationBloc = GeolocationBloc();
+              _geolocationBloc.dispatch(RequestLocation());
+              return _geolocationBloc;
+            },
+          ),
+        ],
+        child: Builder(
+          refreshController: _refreshController,
+          scrollController: _scrollController,
         ),
       ),
       bottomNavigationBar: Column(
@@ -204,9 +122,124 @@ class _FeedPageState extends State<FeedPage>
   void _onScroll() {
     final maxScroll = _scrollController.position.maxScrollExtent;
     final currentScroll = _scrollController.position.pixels;
-    if (maxScroll - currentScroll <= _scrollThreshold) {
+    if (maxScroll - currentScroll <= Config.SCROLL_THRESHOLD) {
       _postBloc.dispatch(Fetch());
     }
+  }
+}
+
+class Builder extends StatelessWidget {
+  final RefreshController _refreshController;
+  final ScrollController _scrollController;
+
+  Builder(
+      {Key key,
+      @required RefreshController refreshController,
+      @required ScrollController scrollController})
+      : _refreshController = refreshController,
+        _scrollController = scrollController,
+        super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final GeolocationBloc _geolocationBloc =
+        BlocProvider.of<GeolocationBloc>(context);
+    final PostBloc _postBloc = BlocProvider.of<PostBloc>(context);
+
+    /// Refresh all post in the [FeedPage] by fetching a new location.
+    /// Called by pull-to-refresh and slider.
+    /// Note that refresh disposes all previous requested posts i.e. listviewBuilder is cleared.
+    void _onRefresh() {
+      _geolocationBloc.dispatch(RequestLocation());
+    }
+
+    return BlocListenerTree(
+      blocListeners: [
+        BlocListener<GeolocationEvent, GeolocationState>(
+          bloc: _geolocationBloc,
+          listener: (BuildContext context, GeolocationState state) {
+            /// If BLoC is able to retrieve a location, issue a [PostEvent] to retrieve post based on radius.
+            if (state is LocationLoaded) {
+              // lat = state.latitude;
+              // long = state.longitude;
+              _postBloc.dispatch(Refresh());
+            }
+
+            /// If Bloc is unable to retrieve a location, throw snackbar to warn user.
+            if (state is GeolocationDisabled) {
+              Scaffold.of(context)
+                ..hideCurrentSnackBar()
+                ..showSnackBar(
+                  SnackBar(
+                    content: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Geolocation Access Disabled'),
+                        Icon(Icons.error),
+                      ],
+                    ),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+            }
+          },
+        ),
+      ],
+      child: BlocBuilder(
+        bloc: BlocProvider.of<PostBloc>(context),
+        builder: (BuildContext context, PostState state) {
+          /// Draw an indicator of [PostEvent] is uninitalized.
+          if (state is PostUninitialized) {
+            return Center(
+              child: LoadingIndicator(),
+            );
+          }
+
+          /// If the PostBLoc is unable to query to the database, warn user.
+          if (state is PostError) {
+            return Center(
+              child: Text('failed to fetch posts'),
+            );
+          }
+
+          /// If PostLoaded, populate and draw listviewBuilder.
+          if (state is PostLoaded) {
+            /// Unset refresh controller.
+            _refreshController.refreshCompleted();
+            if (state.posts.isEmpty) {
+              return Center(
+                child: Text('no posts'),
+              );
+            } else {
+              return SmartRefresher(
+                enablePullDown: true,
+                enablePullUp: false,
+                header: ClassicHeader(),
+                controller: _refreshController,
+                onRefresh: _onRefresh,
+                child: ListView.builder(
+                  itemBuilder: (BuildContext context, int index) {
+                    return index >= state.posts.length
+                        ? LoadingIndicator()
+                        : PostWidget(
+                            post: state.posts[index],
+                            lat: 0,
+                            long: 0,
+                            radii: 0,
+                            index: index,
+                          );
+                  },
+                  itemCount: state.hasReachedMax
+                      ? state.posts.length
+                      : state.posts.length + 1,
+                  controller: _scrollController,
+                ),
+              );
+            }
+          }
+        },
+      ),
+    );
   }
 }
 

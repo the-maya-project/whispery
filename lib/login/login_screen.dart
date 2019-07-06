@@ -20,26 +20,29 @@ class _LoginScreenState extends State<LoginScreen> {
   RegisterBloc _registerBloc;
 
   UserRepository get _userRepository => widget._userRepository;
-
-  @override
-  void initState() {
-    super.initState();
-    _loginBloc = LoginBloc(
-      userRepository: _userRepository,
-    );
-    _registerBloc = RegisterBloc(
-      userRepository: _userRepository,
-    );
-  }
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Login')),
       body: BlocProviderTree(
         blocProviders: [
-          BlocProvider<LoginBloc>(bloc: _loginBloc),
-          BlocProvider<RegisterBloc>(bloc: _registerBloc),
+          BlocProvider<LoginBloc>(
+            builder: (BuildContext context) {
+              _loginBloc = LoginBloc(
+                userRepository: _userRepository,
+              );
+              return _loginBloc;
+            },
+          ),
+          BlocProvider<RegisterBloc>(
+            builder: (BuildContext context) {
+              _registerBloc = RegisterBloc(
+                userRepository: _userRepository,
+              );
+              return _registerBloc;
+            },
+          ),
         ],
         child: LoginForm(userRepository: _userRepository),
       ),

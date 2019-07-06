@@ -3,7 +3,7 @@ import 'package:whispery/globals/config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RadiusSlider extends StatefulWidget {
-  final double _radius = Config.SLIDER_DEFAULT;
+  final double _radius = Config.DEFAULT_RADIUS;
   final VoidCallback _onChange;
 
   RadiusSlider({Key key, @required VoidCallback onChange})
