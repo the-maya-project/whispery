@@ -5,6 +5,11 @@ abstract class SharedPreferencesEvent extends Equatable {
   SharedPreferencesEvent([List props = const []]) : super(props);
 }
 
+class InitializeEvent extends SharedPreferencesEvent {
+  @override
+  String toString() => 'InitializeEvent';
+}
+
 class Write extends SharedPreferencesEvent {
   final String property;
   final dynamic value;
@@ -42,5 +47,5 @@ class SetRadius extends SharedPreferencesEvent {
   }) : super([radius]);
 
   @override
-  String toString() => 'SetRadius';
+  String toString() => 'SetRadius: $radius';
 }

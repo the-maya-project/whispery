@@ -303,8 +303,8 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListenerTree(
-      blocListeners: [
+    return MultiBlocListener(
+      listeners: [
         BlocListener<register.RegisterEvent, register.RegisterState>(
           bloc: _registerBloc,
           listener: (BuildContext context, register.RegisterState state) {

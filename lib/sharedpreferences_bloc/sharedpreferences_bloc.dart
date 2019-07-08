@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:whispery/globals/config.dart';
 import 'package:whispery/sharedpreferences_bloc/bloc.dart';
 
 class SharedPreferencesBloc
@@ -18,6 +19,8 @@ class SharedPreferencesBloc
       yield* _mapGetRadius(event);
     } else if (event is SetRadius) {
       yield* _mapSetRadius(event);
+    } else if (event is InitializeEvent) {
+      yield* __mapInitializeEvent(event);
     }
   }
 
@@ -68,7 +71,16 @@ class SharedPreferencesBloc
       SharedPreferencesEvent event) async* {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    await prefs.setDouble('radius', (event as Write).value);
+    await prefs.setDouble('radius', (event as SetRadius).radius);
+    yield SharedPreferencesCompleted();
+  }
+
+  Stream<SharedPreferencesState> __mapInitializeEvent(
+      SharedPreferencesEvent event) async* {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (!prefs.containsKey('radius')) {
+      await prefs.setDouble('radius', Config.DEFAULT_RADIUS);
+    }
     yield SharedPreferencesCompleted();
   }
 }

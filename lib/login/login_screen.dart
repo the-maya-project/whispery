@@ -4,7 +4,7 @@ import 'package:whispery/helpers/user_repository.dart';
 import 'package:whispery/login/login.dart';
 import 'package:whispery/register/bloc/bloc.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends StatelessWidget {
   final UserRepository _userRepository;
 
   LoginScreen({Key key, @required UserRepository userRepository})
@@ -12,24 +12,15 @@ class LoginScreen extends StatefulWidget {
         _userRepository = userRepository,
         super(key: key);
 
-  State<LoginScreen> createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends State<LoginScreen> {
-  LoginBloc _loginBloc;
-  RegisterBloc _registerBloc;
-
-  UserRepository get _userRepository => widget._userRepository;
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Login')),
-      body: BlocProviderTree(
-        blocProviders: [
+      body: MultiBlocProvider(
+        providers: [
           BlocProvider<LoginBloc>(
             builder: (BuildContext context) {
-              _loginBloc = LoginBloc(
+              LoginBloc _loginBloc = LoginBloc(
                 userRepository: _userRepository,
               );
               return _loginBloc;
@@ -37,7 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           BlocProvider<RegisterBloc>(
             builder: (BuildContext context) {
-              _registerBloc = RegisterBloc(
+              RegisterBloc _registerBloc = RegisterBloc(
                 userRepository: _userRepository,
               );
               return _registerBloc;
@@ -47,12 +38,5 @@ class _LoginScreenState extends State<LoginScreen> {
         child: LoginForm(userRepository: _userRepository),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _loginBloc.dispose();
-    _registerBloc.dispose();
-    super.dispose();
   }
 }
