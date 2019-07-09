@@ -3,7 +3,6 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:whispery/authentication_bloc/bloc.dart';
-import 'package:whispery/globals/config.dart';
 import 'package:whispery/pages/landing_page.dart';
 import 'package:whispery/pages/splash_page.dart';
 import 'package:whispery/login/login.dart';
@@ -42,7 +41,7 @@ void main() {
         ],
         child: Builder(),
       ),
-    ),
+    ), 
   );
 }
 
@@ -55,8 +54,6 @@ class Builder extends StatelessWidget {
   Widget build(BuildContext context) {
     final AuthenticationBloc _authenticationBloc =
         BlocProvider.of<AuthenticationBloc>(context);
-    final UserRepository _userRepository =
-        RepositoryProvider.of<UserRepository>(context);
 
     return MaterialApp(
       theme: ThemeData(fontFamily: 'Barlow'),
@@ -67,7 +64,7 @@ class Builder extends StatelessWidget {
             return SplashPage();
           }
           if (state is Unauthenticated) {
-            return LoginScreen(userRepository: _userRepository);
+            return LoginScreen();
           }
           if (state is Authenticated) {
             return LandingPage();

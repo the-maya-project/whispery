@@ -5,15 +5,11 @@ import 'package:whispery/login/login.dart';
 import 'package:whispery/register/bloc/bloc.dart';
 
 class LoginScreen extends StatelessWidget {
-  final UserRepository _userRepository;
-
-  LoginScreen({Key key, @required UserRepository userRepository})
-      : assert(userRepository != null),
-        _userRepository = userRepository,
-        super(key: key);
-
   @override
   Widget build(BuildContext context) {
+    final UserRepository _userRepository =
+        RepositoryProvider.of<UserRepository>(context);
+
     return Scaffold(
       appBar: AppBar(title: Text('Login')),
       body: MultiBlocProvider(

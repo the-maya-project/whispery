@@ -23,13 +23,15 @@ class FeedPage extends StatefulWidget {
 /// Mixin with [AutomaticKeepAliveClientMixin] to prevent page from being refreshed when switching between pages.
 class _FeedPageState extends State<FeedPage>
     with AutomaticKeepAliveClientMixin {
-      
   @override
   bool get wantKeepAlive => true;
 
   @override
   @mustCallSuper
   Widget build(BuildContext context) {
+    final UserRepository _userRepository =
+        RepositoryProvider.of<UserRepository>(context);
+
     super.build(context);
     return MultiBlocProvider(
       providers: [
@@ -48,8 +50,8 @@ class _FeedPageState extends State<FeedPage>
         ),
         BlocProvider<AuthenticationBloc>(
           builder: (BuildContext context) {
-            AuthenticationBloc _authenticationBloc = AuthenticationBloc(
-                userRepository: RepositoryProvider.of<UserRepository>(context));
+            AuthenticationBloc _authenticationBloc =
+                AuthenticationBloc(userRepository: _userRepository);
             return _authenticationBloc;
           },
         ),
@@ -105,8 +107,8 @@ class Builder extends StatelessWidget {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                    builder: (context) =>
-                        LoginScreen(userRepository: _userRepository)),
+                  builder: (context) => LoginScreen(),
+                ),
               );
             },
           ),

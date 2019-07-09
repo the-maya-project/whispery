@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:whispery/pages/bio_page.dart';
+import 'package:whispery/pages/comment_page.dart';
 import 'package:whispery/pages/feed_page.dart';
 import 'package:whispery/pages/post_page.dart';
 
@@ -24,6 +25,7 @@ class _LandingPageState extends State<LandingPage> {
     PostPage(),
     FeedPage(),
     BioPage(),
+    CommentPage(),
   ];
 
   @override
