@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:whispery/authentication_bloc/bloc.dart';
+import 'package:whispery/pages/error_page.dart';
 import 'package:whispery/pages/landing_page.dart';
 import 'package:whispery/pages/splash_page.dart';
 import 'package:whispery/login/login.dart';
 import 'package:whispery/helpers/user_repository.dart';
 import 'package:whispery/helpers/simple_bloc_delegate.dart';
 import 'package:whispery/sharedpreferences_bloc/bloc.dart';
-import 'package:whispery/sharedpreferences_bloc/sharedpreferences_bloc.dart';
+import 'package:whispery/authentication_bloc/bloc.dart';
 
 void main() {
   BlocSupervisor.delegate = SimpleBlocDelegate();
@@ -41,7 +41,7 @@ void main() {
         ],
         child: Builder(),
       ),
-    ), 
+    ),
   );
 }
 
@@ -68,6 +68,8 @@ class Builder extends StatelessWidget {
           }
           if (state is Authenticated) {
             return LandingPage();
+          } else {
+            return ErrorPage();
           }
         },
       ),

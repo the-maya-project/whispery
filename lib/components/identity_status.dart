@@ -13,15 +13,22 @@ class IdentityStatus extends StatelessWidget {
     return Container(
       margin: EdgeInsets.all(15.0),
       padding: EdgeInsets.all(15.0),
-      child: Center(
-        child: Text(
-          _title,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: _size,
+      child: Column(
+        children: <Widget>[
+          Center(
+            child: Text(
+              _title,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: _size,
+              ),
+              textAlign: TextAlign.center,
+            ),
           ),
-          textAlign: TextAlign.center,
-        ),
+          Container(
+            alignment: Alignment.bottomRight,
+            child: Text("sample")),
+        ],
       ),
       decoration: BoxDecoration(
         border: Border.all(
