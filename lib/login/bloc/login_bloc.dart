@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:rxdart/rxdart.dart';
-import 'package:whispery/login/login.dart';
-import 'package:whispery/user_repository.dart';
-import 'package:whispery/validators.dart';
+import 'package:whispery/login/bloc/bloc.dart';
+import 'package:whispery/helpers/user_repository.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   UserRepository _userRepository;
@@ -19,16 +17,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
   @override
   Stream<LoginState> mapEventToState(LoginEvent event) async* {
-    // if (event is EmailChanged) {
-    //   yield* _mapEmailChangedToState(event.email);
-    // } else if (event is PasswordChanged) {
-    //   yield* _mapPasswordChangedToState(event.password);
-    // } else if (event is LoginWithGooglePressed) {
-    //   yield* _mapLoginWithGooglePressedToState();
-    // } else
     if (event is LoginWithCredentialsPressed) {
-      // yield* _mapEmailChangedToState(event.email);
-      // yield* _mapPasswordChangedToState(event.password);
       yield* _mapLoginWithCredentialsPressedToState(
         email: event.email,
         password: event.password,
@@ -36,18 +25,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     }
   }
 
-  // Stream<LoginState> _mapEmailChangedToState(String email) async* {
-  //   yield currentState.update(
-  //     isEmailValid: Validators.isValidEmail(email),
-  //   );
-  // }
-
-  // Stream<LoginState> _mapPasswordChangedToState(String password) async* {
-  //   yield currentState.update(
-  //     isPasswordValid: Validators.isValidPassword(password),
-  //   );
-  // }
-
+  /// TODO: Login with GoogleSignIn.
   Stream<LoginState> _mapLoginWithGooglePressedToState() async* {
     try {
       await _userRepository.signInWithGoogle();

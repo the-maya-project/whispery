@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:whispery/globals/strings.dart';
-import 'package:whispery/user_repository.dart';
+import 'package:whispery/helpers/user_repository.dart';
 import 'package:whispery/authentication_bloc/bloc.dart';
 import 'package:whispery/login/login.dart' as login;
 import 'package:email_validator/email_validator.dart';
-import 'package:whispery/validators.dart';
-import 'package:whispery/register/register.dart' as register;
+import 'package:whispery/helpers/validators.dart';
+import 'package:whispery/register/bloc/bloc.dart' as register;
 
 class LoginForm extends StatefulWidget {
   final UserRepository _userRepository;
@@ -303,8 +303,8 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListenerTree(
-      blocListeners: [
+    return MultiBlocListener(
+      listeners: [
         BlocListener<register.RegisterEvent, register.RegisterState>(
           bloc: _registerBloc,
           listener: (BuildContext context, register.RegisterState state) {
@@ -389,7 +389,7 @@ class _LoginFormState extends State<LoginForm> {
       ],
       child: BlocBuilder(
         bloc: _loginBloc,
-        builder: (BuildContext context, login.LoginState stateL) {
+        builder: (BuildContext context, login.LoginState state) {
           return Padding(
             padding: EdgeInsets.all(20.0),
             child: Form(

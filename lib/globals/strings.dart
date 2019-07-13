@@ -1,4 +1,7 @@
 class Strings {
+  /// [ErrorPage]
+  static String errorMesage = "You shouldn't be here. Please file a bug report at github.com/the-maya-project";
+
   static String emptyField = "Input cannot be empty.";
   static String invalidEmail = "Email must be of valid format.";
   static String invalidPassword = "Password must contain an uppercase letter, a symbol, a number and 8 characters long.";
@@ -34,4 +37,7 @@ class Strings {
       "https://us-central1-whispery-1a75a.cloudfunctions.net/postFeed";
   static String commentsFunction =
       "https://us-central1-whispery-1a75a.cloudfunctions.net/commentFeed";
+
+  static String feedFunction = "";
 }
+

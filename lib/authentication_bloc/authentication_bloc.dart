@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:whispery/authentication_bloc/bloc.dart';
-import 'package:whispery/user_repository.dart';
+import 'package:whispery/helpers/user_repository.dart';
 
 class AuthenticationBloc
     extends Bloc<AuthenticationEvent, AuthenticationState> {
@@ -31,6 +31,9 @@ class AuthenticationBloc
   Stream<AuthenticationState> _mapAppStartedToState() async* {
     try {
       final isSignedIn = await _userRepository.isSignedIn();
+
+      /// Artificial delay to avoid jarring incoming [SplashScreen].
+      await Future.delayed(const Duration(seconds: 1), () {});
       if (isSignedIn) {
         final name = await _userRepository.getUser();
         yield Authenticated(name);
