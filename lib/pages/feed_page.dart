@@ -47,13 +47,6 @@ class _FeedPageState extends State<FeedPage>
             return _geolocationBloc;
           },
         ),
-        BlocProvider<AuthenticationBloc>(
-          builder: (BuildContext context) {
-            AuthenticationBloc _authenticationBloc =
-                AuthenticationBloc(userRepository: _userRepository);
-            return _authenticationBloc;
-          },
-        ),
       ],
       child: Builder(),
     );
