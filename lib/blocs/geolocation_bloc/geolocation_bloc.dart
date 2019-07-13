@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:whispery/geolocation_bloc/bloc.dart';
+import 'package:whispery/blocs/geolocation_bloc/bloc.dart';
 import 'package:geolocator/geolocator.dart';
 
 class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {

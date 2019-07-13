@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:whispery/helpers/user_repository.dart';
-import 'package:whispery/register/bloc/bloc.dart';
+import 'package:whispery/blocs/register_bloc/bloc.dart';
 
 class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   final UserRepository _userRepository;
