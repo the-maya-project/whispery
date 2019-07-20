@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'package:whispery/components/loading_indicator.dart';
-import 'package:whispery/helpers/user_repository.dart';
+import 'package:whispery/components/radius_slider.dart';
 import 'package:whispery/models/post.dart';
 import 'package:whispery/blocs/post_bloc/bloc.dart';
 import 'package:whispery/blocs/geolocation_bloc/bloc.dart';
@@ -28,9 +28,6 @@ class _FeedPageState extends State<FeedPage>
   @override
   @mustCallSuper
   Widget build(BuildContext context) {
-    final UserRepository _userRepository =
-        RepositoryProvider.of<UserRepository>(context);
-
     super.build(context);
     return MultiBlocProvider(
       providers: [
@@ -53,7 +50,12 @@ class _FeedPageState extends State<FeedPage>
   }
 }
 
-class Builder extends StatelessWidget {
+class Builder extends StatefulWidget {
+  @override
+  _BuilderState createState() => _BuilderState();
+}
+
+class _BuilderState extends State<Builder> {
   final ScrollController _scrollController = ScrollController();
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
@@ -185,7 +187,7 @@ class Builder extends StatelessWidget {
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          // slider(),
+          RadiusSlider(),
         ],
       ),
     );
