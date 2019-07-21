@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 
 class LongButton extends StatelessWidget {
   final String _text;
-  final double _size = 16.0;
+  final VoidCallback _onPressed;
 
-  LongButton({Key key, @required String text})
+  LongButton({Key key, @required String text, @required VoidCallback onPressed})
       : _text = text,
+        _onPressed = onPressed,
         super(key: key);
 
   @override
@@ -16,7 +17,7 @@ class LongButton extends StatelessWidget {
       padding: EdgeInsets.all(15.0),
       child: RaisedButton(
         child: Text(_text),
-        onPressed: () => null,
+        onPressed: _onPressed,
       ),
     );
   }

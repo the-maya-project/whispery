@@ -5,7 +5,7 @@ import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:http/http.dart' as http;
 import 'package:bloc/bloc.dart';
-import 'package:whispery/post_bloc/bloc.dart';
+import 'package:whispery/blocs/post_bloc/bloc.dart';
 import 'package:whispery/models/post.dart';
 
 class PostBloc extends Bloc<PostEvent, PostState> {

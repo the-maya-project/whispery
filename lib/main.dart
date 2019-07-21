@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:whispery/pages/entry_page.dart';
 
 import 'package:whispery/pages/error_page.dart';
 import 'package:whispery/pages/landing_page.dart';
 import 'package:whispery/pages/splash_page.dart';
-import 'package:whispery/login/login.dart';
 import 'package:whispery/helpers/user_repository.dart';
 import 'package:whispery/helpers/simple_bloc_delegate.dart';
-import 'package:whispery/sharedpreferences_bloc/bloc.dart';
-import 'package:whispery/authentication_bloc/bloc.dart';
+import 'package:whispery/blocs/sharedpreferences_bloc/bloc.dart';
+import 'package:whispery/blocs/authentication_bloc/bloc.dart';
 
 void main() {
   BlocSupervisor.delegate = SimpleBlocDelegate();
@@ -62,11 +62,9 @@ class Builder extends StatelessWidget {
         builder: (BuildContext context, AuthenticationState state) {
           if (state is Uninitialized) {
             return SplashPage();
-          }
-          if (state is Unauthenticated) {
-            return LoginScreen();
-          }
-          if (state is Authenticated) {
+          } else if (state is Unauthenticated) {
+            return EntryPage();
+          } else if (state is Authenticated) {
             return LandingPage();
           } else {
             return ErrorPage();

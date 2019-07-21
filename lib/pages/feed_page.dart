@@ -4,12 +4,11 @@ import 'package:http/http.dart' as http;
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'package:whispery/components/loading_indicator.dart';
-import 'package:whispery/helpers/user_repository.dart';
-import 'package:whispery/login/login_screen.dart';
+import 'package:whispery/components/radius_slider.dart';
 import 'package:whispery/models/post.dart';
-import 'package:whispery/post_bloc/bloc.dart';
-import 'package:whispery/geolocation_bloc/bloc.dart';
-import 'package:whispery/authentication_bloc/bloc.dart';
+import 'package:whispery/blocs/post_bloc/bloc.dart';
+import 'package:whispery/blocs/geolocation_bloc/bloc.dart';
+import 'package:whispery/blocs/authentication_bloc/bloc.dart';
 import 'package:whispery/globals/config.dart';
 import 'package:whispery/components/feed_tile.dart';
 
@@ -29,9 +28,6 @@ class _FeedPageState extends State<FeedPage>
   @override
   @mustCallSuper
   Widget build(BuildContext context) {
-    final UserRepository _userRepository =
-        RepositoryProvider.of<UserRepository>(context);
-
     super.build(context);
     return MultiBlocProvider(
       providers: [
@@ -48,23 +44,18 @@ class _FeedPageState extends State<FeedPage>
             return _geolocationBloc;
           },
         ),
-        BlocProvider<AuthenticationBloc>(
-          builder: (BuildContext context) {
-            AuthenticationBloc _authenticationBloc =
-                AuthenticationBloc(userRepository: _userRepository);
-            return _authenticationBloc;
-          },
-        ),
       ],
       child: Builder(),
     );
   }
-
-  /// Fetch new post if user has scrolled past a certain threshold.
-
 }
 
-class Builder extends StatelessWidget {
+class Builder extends StatefulWidget {
+  @override
+  _BuilderState createState() => _BuilderState();
+}
+
+class _BuilderState extends State<Builder> {
   final ScrollController _scrollController = ScrollController();
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
@@ -76,8 +67,6 @@ class Builder extends StatelessWidget {
     final PostBloc _postBloc = BlocProvider.of<PostBloc>(context);
     final AuthenticationBloc _authenticationBloc =
         BlocProvider.of<AuthenticationBloc>(context);
-    final UserRepository _userRepository =
-        RepositoryProvider.of<UserRepository>(context);
 
     /// Refresh all post in the [FeedPage] by fetching a new location.
     /// Called by pull-to-refresh and slider.
@@ -104,12 +93,6 @@ class Builder extends StatelessWidget {
             icon: Icon(Icons.exit_to_app),
             onPressed: () {
               _authenticationBloc.dispatch(LoggedOut());
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => LoginScreen(),
-                ),
-              );
             },
           ),
         ],
@@ -147,7 +130,7 @@ class Builder extends StatelessWidget {
           ),
         ],
         child: BlocBuilder(
-          bloc: BlocProvider.of<PostBloc>(context),
+          bloc: _postBloc,
           builder: (BuildContext context, PostState state) {
             /// Draw an indicator of [PostEvent] is uninitalized.
             if (state is PostUninitialized) {
@@ -204,7 +187,7 @@ class Builder extends StatelessWidget {
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          // slider(),
+          RadiusSlider(),
         ],
       ),
     );
