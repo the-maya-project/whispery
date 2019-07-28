@@ -26,7 +26,6 @@ class Builder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final SliderBloc _sliderBloc = BlocProvider.of<SliderBloc>(context);
-
     return BlocBuilder(
       bloc: _sliderBloc,
       builder: (BuildContext context, SliderState state) {
@@ -43,7 +42,9 @@ class Builder extends StatelessWidget {
                   _sliderBloc.dispatch(OnChangedSlider(sliderValue: response));
                 }
               }),
-              onChangeEnd: ((response) {}),
+              onChangeEnd: ((response) {
+                _sliderBloc.dispatch(OnChangeEndSlider(sliderValue: response));
+              }),
             ),
           );
         } else if (state is SliderChange) {
@@ -59,7 +60,9 @@ class Builder extends StatelessWidget {
                 _sliderBloc.dispatch(OnChangedSlider(sliderValue: response));
               }
             }),
-            onChangeEnd: ((response) {}),
+            onChangeEnd: ((response) {
+              _sliderBloc.dispatch(OnChangeEndSlider(sliderValue: response));
+            }),
           );
         } else {
           return Center(
