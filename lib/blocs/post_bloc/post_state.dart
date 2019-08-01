@@ -34,3 +34,22 @@ class PostLoaded extends PostState {
     );
   }
 }
+class PostLoadedAnimateToTop extends PostState {
+  final List<Post> posts;
+  final bool hasReachedMax;
+
+  PostLoadedAnimateToTop({
+    this.posts,
+    this.hasReachedMax,
+  }) : super([posts, hasReachedMax]);
+
+  PostLoadedAnimateToTop copyWith({
+    List<Post> posts,
+    bool hasReachedMax,
+  }) {
+    return PostLoadedAnimateToTop(
+      posts: posts ?? this.posts,
+      hasReachedMax: hasReachedMax ?? this.hasReachedMax,
+    );
+  }
+}

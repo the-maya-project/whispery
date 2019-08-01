@@ -1,22 +1,25 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:whispery/blocs/post_bloc/bloc.dart';
 import 'package:whispery/blocs/sharedpreferences_bloc/bloc.dart';
 import 'package:whispery/blocs/sharedpreferences_bloc/sharedpreferences_bloc.dart';
 import 'package:whispery/blocs/slider_bloc/bloc.dart';
 
 class SliderBloc extends Bloc<SliderEvent, SliderState> {
   final SharedPreferencesBloc _sharedPreferencesBloc;
+  final PostBloc _postBloc;
+
   StreamSubscription _sharedPreferencesSubscription;
 
-  SliderBloc(this._sharedPreferencesBloc) {
-    _sharedPreferencesSubscription =
-        _sharedPreferencesBloc.state.listen((state) {
-      if (state is SharedPreferencesGetRadius) {
-        final double sliderValue = state.radius;
-        this.dispatch(OnChangedSlider(sliderValue: sliderValue));
-      }
-    });
+  SliderBloc(this._sharedPreferencesBloc, this._postBloc) {
+    _sharedPreferencesSubscription = _sharedPreferencesBloc.state.listen(
+      (state) {
+        if (state is SharedPreferencesGetRadius) {
+          this.dispatch(OnChangedSlider(sliderValue: state.radius));
+        }
+      },
+    );
   }
 
   @override
@@ -48,6 +51,7 @@ class SliderBloc extends Bloc<SliderEvent, SliderState> {
   }
 
   Stream<SliderState> _mapOnChangeEndSlider(OnChangeEndSlider event) async* {
+    _postBloc.dispatch(RefreshAnimateToTop());
     _sharedPreferencesBloc.dispatch(SetRadius(radius: event.sliderValue));
   }
 }
