@@ -31,6 +31,14 @@ class PostBloc extends Bloc<PostEvent, PostState> {
 
   @override
   Stream<PostState> mapEventToState(PostEvent event) async* {
+    if (event is RefreshAnimateToTop) {
+      if (currentState is PostLoadedAnimateToTop) {
+        (currentState as PostLoadedAnimateToTop).posts.clear();
+      }
+      final posts = await _fetchPosts(0, 20);
+      yield PostLoadedAnimateToTop(posts: posts, hasReachedMax: false);
+      return;
+    }
     if (event is Refresh) {
       if (currentState is PostLoaded) {
         (currentState as PostLoaded).posts.clear();
@@ -56,9 +64,20 @@ class PostBloc extends Bloc<PostEvent, PostState> {
                   hasReachedMax: false,
                 );
         }
+        if (currentState is PostLoadedAnimateToTop) {
+          final posts =
+              await _fetchPosts((currentState as PostLoadedAnimateToTop).posts.length, 20);
+          yield posts.isEmpty
+              ? (currentState as PostLoadedAnimateToTop).copyWith(hasReachedMax: true)
+              : PostLoaded(
+                  posts: (currentState as PostLoadedAnimateToTop).posts + posts,
+                  hasReachedMax: false,
+                );
+        }
       } catch (_) {
         yield PostError();
       }
+      return;
     }
   }
 

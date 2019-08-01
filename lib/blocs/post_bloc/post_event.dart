@@ -13,3 +13,8 @@ class Refresh extends PostEvent {
   @override
   String toString() => 'Refresh';
 }
+
+class RefreshAnimateToTop extends PostEvent {
+  @override
+  String toString() => 'RefreshAnimateToTop';
+}

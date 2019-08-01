@@ -145,6 +145,47 @@ class _BuilderState extends State<Builder> {
                 child: Text('failed to fetch posts'),
               );
             }
+            if (state is PostLoadedAnimateToTop) {
+              /// Unset refresh controller.
+              _refreshController.refreshCompleted();
+              if (_scrollController.hasClients) {
+                _scrollController.animateTo(
+                  0.0,
+                  curve: Curves.easeOut,
+                  duration: const Duration(milliseconds: 300),
+                );
+              }
+              if (state.posts.isEmpty) {
+                return Center(
+                  child: Text('no posts'),
+                );
+              } else {
+                return SmartRefresher(
+                  enablePullDown: true,
+                  enablePullUp: false,
+                  header: ClassicHeader(),
+                  controller: _refreshController,
+                  onRefresh: _onRefresh,
+                  child: ListView.builder(
+                    itemBuilder: (BuildContext context, int index) {
+                      return index >= state.posts.length
+                          ? LoadingIndicator()
+                          : PostWidget(
+                              post: state.posts[index],
+                              lat: 0,
+                              long: 0,
+                              radii: 0,
+                              index: index,
+                            );
+                    },
+                    itemCount: state.hasReachedMax
+                        ? state.posts.length
+                        : state.posts.length + 1,
+                    controller: _scrollController,
+                  ),
+                );
+              }
+            }
 
             /// If PostLoaded, populate and draw listviewBuilder.
             if (state is PostLoaded) {
