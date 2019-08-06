@@ -17,7 +17,6 @@ class OnChangedSlider extends SliderEvent {
     @required this.sliderValue,
   }) : super([sliderValue]);
 
-
   @override
   String toString() => 'OnChangedSlider';
 }

@@ -20,6 +20,10 @@ class SliderChangeCompleted extends SliderState {
 }
 
 class SliderChange extends SliderState {
+  final dynamic sliderValue;
+
+  SliderChange({@required this.sliderValue}) : super([sliderValue]);
+
   @override
   String toString() => 'SliderChange';
 }
