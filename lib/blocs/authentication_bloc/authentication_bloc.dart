@@ -6,7 +6,7 @@ import 'package:whispery/helpers/user_repository.dart';
 
 class AuthenticationBloc
     extends Bloc<AuthenticationEvent, AuthenticationState> {
-  final UserRepository _userRepository;
+  final UserRepository _userRepository;   // Authentication bloc requires a user respository
 
   AuthenticationBloc({@required UserRepository userRepository})
       : assert(userRepository != null),

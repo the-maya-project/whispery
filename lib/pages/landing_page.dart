@@ -15,7 +15,7 @@ class LandingPage extends StatefulWidget {
 }
 
 class _LandingPageState extends State<LandingPage> {
-  
+
   /// Controller for [PageView] builder, the index for [PageView] is set to the center.
   final _pageViewController = PageController(initialPage: 1);
 
@@ -24,8 +24,8 @@ class _LandingPageState extends State<LandingPage> {
   final List<Widget> _pages = <Widget>[
     PostPage(),
     FeedPage(),
-    BioPage(),
     CommentPage(),
+    BioPage(),
   ];
 
   @override
@@ -34,6 +34,7 @@ class _LandingPageState extends State<LandingPage> {
     _pageViewController.dispose();
   }
 
+  // Build the page based on the index provided
   @override
   Widget build(BuildContext context) {
     return PageView.builder(
