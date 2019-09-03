@@ -13,12 +13,14 @@ import 'package:whispery/blocs/authentication_bloc/bloc.dart';
 
 enum FormType { login, register }
 
+// EntryPage for user login
 class EntryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final UserRepository _userRepository =
         RepositoryProvider.of<UserRepository>(context);
 
+    // Provides LoginBloc and RegisterBloc for builder() in child
     return MultiBlocProvider(
       providers: [
         BlocProvider<LoginBloc>(
@@ -43,26 +45,29 @@ class EntryPage extends StatelessWidget {
   }
 }
 
+// Stateful Widget that builds Scaffold based on Form state
 class Builder extends StatefulWidget {
   Builder({Key key}) : super(key: key);
 
   State<Builder> createState() => __BuilderState();
 }
 
+// Build a scaffold based on the state of LoginForm
 class __BuilderState extends State<Builder> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _validPasswordController =
-      TextEditingController();
+  final TextEditingController _validPasswordController = TextEditingController();
 
   static final _loginFormKey = GlobalKey<FormState>();
   FormType _formType = FormType.login;
   bool _enabled = true;
 
+  
   Widget build(BuildContext context) {
     final LoginBloc _loginBloc = BlocProvider.of<LoginBloc>(context);
     final RegisterBloc _registerBloc = BlocProvider.of<RegisterBloc>(context);
 
+    // Toggle to show the register/login button
     void _toggle() {
       setState(() {
         _enabled = !_enabled;
@@ -85,6 +90,7 @@ class __BuilderState extends State<Builder> {
       });
     }
 
+    // Submit form
     void submit() {
       FormState form = _loginFormKey.currentState;
       form.save();
@@ -112,6 +118,7 @@ class __BuilderState extends State<Builder> {
       }
     }
 
+    // Return respective buttons
     Widget _buttons() {
       switch (_formType) {
         case FormType.login:
@@ -149,16 +156,18 @@ class __BuilderState extends State<Builder> {
       }
     }
 
+    // Accepts string and returns message if invalid mail
     String _emailValidator(String value) {
       if (value.isEmpty) return Strings.emptyField;
       if (!EmailValidator.validate(value)) return Strings.invalidEmail;
     }
 
+    // Acceots string and returns message if password < 8 chars
     String _passwordValidator(String value) {
       if (value.isEmpty) return Strings.emptyField;
       if (value.length < 8) return Strings.invalidPassword;
     }
-
+    // Checks for validity of password 
     String _validPasswordValidator(String value) {
       if (value.isEmpty) return Strings.emptyField;
       if (!Validators.isValidPassword(value)) return Strings.invalidPassword;
@@ -166,6 +175,7 @@ class __BuilderState extends State<Builder> {
         return Strings.passwordMismatch;
     }
 
+    // Based on _formType, return the necessary fields
     Widget _fields() {
       switch (_formType) {
         case FormType.login:
@@ -222,13 +232,16 @@ class __BuilderState extends State<Builder> {
       }
     }
 
+    // Scaffold for the whole page
     return Scaffold(
+      // Register bloc and Login bloc
       body: MultiBlocListener(
         listeners: [
           BlocListener<RegisterEvent, RegisterState>(
             bloc: _registerBloc,
             listener: (BuildContext context, RegisterState state) {
-              _toggle();
+              _toggle(); // enabled = false
+              // If data is still being submitted
               if (state.isSubmitting) {
                 Scaffold.of(context)
                   ..hideCurrentSnackBar()
@@ -244,6 +257,7 @@ class __BuilderState extends State<Builder> {
                     ),
                   );
               }
+              // If failure
               if (state.isFailure) {
                 Scaffold.of(context)
                   ..hideCurrentSnackBar()
@@ -260,6 +274,7 @@ class __BuilderState extends State<Builder> {
                     ),
                   );
               }
+              // If success in registering
               if (state.isSuccess) {
                 BlocProvider.of<AuthenticationBloc>(context)
                     .dispatch(LoggedIn());
@@ -269,7 +284,7 @@ class __BuilderState extends State<Builder> {
           BlocListener<LoginEvent, LoginState>(
             bloc: _loginBloc,
             listener: (BuildContext context, LoginState state) {
-              _toggle();
+              _toggle(); // _enabled = false
               if (state.isFailure) {
                 Scaffold.of(context)
                   ..hideCurrentSnackBar()

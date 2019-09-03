@@ -55,6 +55,7 @@ class Builder extends StatefulWidget {
   _BuilderState createState() => _BuilderState();
 }
 
+// State of the FeedPage builder
 class _BuilderState extends State<Builder> {
   final ScrollController _scrollController = ScrollController();
   final RefreshController _refreshController =
@@ -62,19 +63,18 @@ class _BuilderState extends State<Builder> {
 
   @override
   Widget build(BuildContext context) {
-    final GeolocationBloc _geolocationBloc =
-        BlocProvider.of<GeolocationBloc>(context);
+    final GeolocationBloc _geolocationBloc = BlocProvider.of<GeolocationBloc>(context);
     final PostBloc _postBloc = BlocProvider.of<PostBloc>(context);
-    final AuthenticationBloc _authenticationBloc =
-        BlocProvider.of<AuthenticationBloc>(context);
+    final AuthenticationBloc _authenticationBloc = BlocProvider.of<AuthenticationBloc>(context);
 
-    /// Refresh all post in the [FeedPage] by fetching a new location.
+    /// Upon refreshing of [FeedPage], fetch new location.
     /// Called by pull-to-refresh and slider.
     /// Note that refresh disposes all previous requested posts i.e. listviewBuilder is cleared.
     void _onRefresh() {
       _geolocationBloc.dispatch(RequestLocation());
     }
 
+    // Upon scrolling within SCROLL_THRESHOLD, fetch more posts
     void _onScroll() {
       final maxScroll = _scrollController.position.maxScrollExtent;
       final currentScroll = _scrollController.position.pixels;
@@ -85,6 +85,7 @@ class _BuilderState extends State<Builder> {
 
     _scrollController.addListener(_onScroll);
 
+    // Scaffold for Feed Page
     return Scaffold(
       appBar: AppBar(
         title: Text('Username'),
@@ -97,12 +98,15 @@ class _BuilderState extends State<Builder> {
           ),
         ],
       ),
+      // Multiple Blocs with listeners
       body: MultiBlocListener(
         listeners: [
+          
           BlocListener<GeolocationEvent, GeolocationState>(
             bloc: _geolocationBloc,
-            listener: (BuildContext context, GeolocationState state) {
+            listener: (BuildContext context, GeolocationState state) {    // Listener is invoked when there is a state change in GeolocationState
               /// If BLoC is able to retrieve a location, issue a [PostEvent] to retrieve post based on radius.
+              /// Location loaded, refresh the feed page
               if (state is LocationLoaded) {
                 // lat = state.latitude;
                 // long = state.longitude;
@@ -129,22 +133,23 @@ class _BuilderState extends State<Builder> {
             },
           ),
         ],
+        /// BlocBuilder calls builder everytime there is a change in the state
         child: BlocBuilder(
           bloc: _postBloc,
           builder: (BuildContext context, PostState state) {
-            /// Draw an indicator of [PostEvent] is uninitalized.
+            /// [PostEvent] is uninitalized, display loading indicator
             if (state is PostUninitialized) {
               return Center(
                 child: LoadingIndicator(),
               );
             }
-
-            /// If the PostBLoc is unable to query to the database, warn user.
+            /// If PostBLoc is unable to query to the database, warn user.
             if (state is PostError) {
               return Center(
                 child: Text('failed to fetch posts'),
               );
             }
+            /// If PostBloc successfully loads a post, load the posts w animation
             if (state is PostLoadedAnimateToTop) {
               /// Unset refresh controller.
               _refreshController.refreshCompleted();
@@ -186,7 +191,6 @@ class _BuilderState extends State<Builder> {
                 );
               }
             }
-
             /// If PostLoaded, populate and draw listviewBuilder.
             if (state is PostLoaded) {
               /// Unset refresh controller.
@@ -203,6 +207,7 @@ class _BuilderState extends State<Builder> {
                   controller: _refreshController,
                   onRefresh: _onRefresh,
                   child: ListView.builder(
+                    // itemBuilder builds scrollable list of widgets while index less than itemCount
                     itemBuilder: (BuildContext context, int index) {
                       return index >= state.posts.length
                           ? LoadingIndicator()
@@ -235,6 +240,7 @@ class _BuilderState extends State<Builder> {
   }
 }
 
+// Widget for a single post
 class PostWidget extends StatelessWidget {
   final Post post;
   final double lat;

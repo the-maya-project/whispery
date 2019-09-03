@@ -29,11 +29,12 @@ class PostLoaded extends PostState {
     bool hasReachedMax,
   }) {
     return PostLoaded(
-      posts: posts ?? this.posts,
+      posts: posts ?? this.posts, // If no posts passed as args, then load this.posts
       hasReachedMax: hasReachedMax ?? this.hasReachedMax,
     );
   }
 }
+
 class PostLoadedAnimateToTop extends PostState {
   final List<Post> posts;
   final bool hasReachedMax;

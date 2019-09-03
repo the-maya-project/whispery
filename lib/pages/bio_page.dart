@@ -21,18 +21,18 @@ class _BioPageState extends State<BioPage> with AutomaticKeepAliveClientMixin {
       body: ListView(
         children: <Widget>[
           Header(
-            title: "identity",
+            title: "John Appleseed",
           ),
           IdentityStatus(
-            title: "Born in Jakarta, but I live like I'm from Calabasas.",
+            title: "Year 1 NUS Computing Student.",
           ),
           SolidText(
-            title: "history",
-            textAlign: TextAlign.right,
+            title: "post history",
+            textAlign: TextAlign.left,
           ),
           ListView.builder(
             itemBuilder: (BuildContext context, int index) {
-              return PostWidget(text: "sample", index: index);
+              return PostWidget(text: "sample post", index: index);
             },
             itemCount: 30,
             shrinkWrap: true,
